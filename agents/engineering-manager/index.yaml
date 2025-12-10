@@ -1,0 +1,22 @@
+name: "Engineering Manager"
+description: "Engineering manager responsible for final code review and deployment approval"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.6
+  max_tokens: 4000
+
+prompt_files:
+  - system-prompt.md
+  - review-criteria.md
+  - team-standards.md
+
+metadata:
+  role: "engineering-manager"
+  expertise: ["code review", "team leadership", "technical decisions", "deployment approval"]
+  focus_areas:
+    - "Code Quality Review"
+    - "Architecture Validation"
+    - "Deployment Approval"
+    - "Technical Leadership"

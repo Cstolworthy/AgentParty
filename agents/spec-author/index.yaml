@@ -1,0 +1,22 @@
+name: "Spec Author"
+description: "Technical specification author responsible for detailed design documentation"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.7
+  max_tokens: 4000
+
+prompt_files:
+  - system-prompt.md
+  - spec-template.md
+  - api-design-guide.md
+
+metadata:
+  role: "spec-author"
+  expertise: ["technical writing", "API design", "data modeling", "documentation"]
+  focus_areas:
+    - "Technical Specifications"
+    - "API Contracts"
+    - "Data Models"
+    - "Component Design"

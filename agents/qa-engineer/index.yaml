@@ -1,0 +1,22 @@
+name: "QA Engineer"
+description: "Quality assurance engineer responsible for testing and validation"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.6
+  max_tokens: 4000
+
+prompt_files:
+  - system-prompt.md
+  - testing-strategy.md
+  - test-cases.md
+
+metadata:
+  role: "qa-engineer"
+  expertise: ["testing", "quality assurance", "test automation", "bug detection"]
+  focus_areas:
+    - "Test Planning"
+    - "Test Execution"
+    - "Bug Reporting"
+    - "Quality Metrics"

@@ -1,0 +1,127 @@
+name: "Node.js Development Workflow"
+version: "1.0"
+description: "Complete Node.js/TypeScript development workflow with async patterns and API design"
+
+steps:
+  - id: "requirements"
+    name: "Requirements Analysis"
+    description: "Gather and validate requirements"
+    agent: "requirements-engineer"
+    inputs: []
+    outputs: ["requirements_doc"]
+    transitions:
+      - to: "specification"
+
+  - id: "specification"
+    name: "API Specification"
+    description: "Design RESTful API and data models"
+    agent: "spec-author"
+    inputs: ["requirements_doc"]
+    outputs: ["api_spec", "data_models", "openapi_doc"]
+    approvals:
+      - agent: "product-manager"
+        condition: "requirements_met"
+    transitions:
+      - to: "architecture"
+
+  - id: "architecture"
+    name: "Architecture Design"
+    description: "Design Node.js architecture with async patterns and middleware"
+    agent: "architect"
+    inputs: ["api_spec", "data_models"]
+    outputs: ["architecture_doc", "middleware_design"]
+    approvals:
+      - agent: "engineering-manager"
+        condition: "architecture_approved"
+    transitions:
+      - to: "implementation"
+
+  - id: "implementation"
+    name: "TDD Implementation"
+    description: "Implement with Jest/Mocha and TypeScript"
+    agent: "programmer"
+    inputs: ["api_spec", "architecture_doc"]
+    outputs: ["source_code", "unit_tests", "integration_tests"]
+    transitions:
+      - to: "standards-audit"
+
+  - id: "standards-audit"
+    name: "Code Standards & Linting"
+    description: "Verify ESLint, Prettier, and TypeScript best practices"
+    agent: "coding-standards-auditor"
+    inputs: ["source_code"]
+    outputs: ["lint_report", "type_check_results"]
+    approvals:
+      - agent: "coding-standards-auditor"
+        condition: "standards_pass"
+    transitions:
+      - to: "qa-testing"
+        condition: "pass"
+      - to: "implementation"
+        condition: "fail"
+
+  - id: "qa-testing"
+    name: "QA Testing & API Validation"
+    description: "Test API endpoints, error handling, and edge cases"
+    agent: "qa-engineer"
+    inputs: ["source_code", "unit_tests", "api_spec"]
+    outputs: ["test_results", "api_test_report"]
+    approvals:
+      - agent: "qa-engineer"
+        condition: "tests_pass"
+    transitions:
+      - to: "policy-gate"
+        condition: "pass"
+      - to: "implementation"
+        condition: "fail"
+
+  - id: "policy-gate"
+    name: "Security & Dependency Audit"
+    description: "Check for vulnerabilities and compliance"
+    agent: "policy-gate"
+    inputs: ["source_code", "package.json", "api_spec"]
+    outputs: ["security_report", "dependency_audit"]
+    approvals:
+      - agent: "policy-gate"
+        condition: "security_pass"
+    transitions:
+      - to: "final-review"
+        condition: "pass"
+      - to: "implementation"
+        condition: "security_fail"
+
+  - id: "final-review"
+    name: "Engineering Manager Review"
+    description: "Final review and deployment approval"
+    agent: "engineering-manager"
+    inputs: ["source_code", "test_results", "security_report"]
+    outputs: ["approval"]
+    approvals:
+      - agent: "engineering-manager"
+        condition: "approved"
+    transitions:
+      - to: "complete"
+
+  - id: "complete"
+    name: "Complete"
+    description: "Ready for deployment"
+    agent: "sdlc-orchestrator"
+    inputs: ["approval"]
+    outputs: ["deployment_ready"]
+
+metadata:
+  stack: "nodejs"
+  language: "TypeScript"
+  frameworks: ["Express", "Fastify", "NestJS"]
+  testing: ["Jest", "Mocha", "Supertest"]
+  principles:
+    - "Async/Await patterns"
+    - "Error-first callbacks"
+    - "Middleware composition"
+    - "Dependency injection"
+  conventions:
+    - "camelCase for variables and functions"
+    - "PascalCase for classes and types"
+    - "Use strict TypeScript"
+    - "ESLint + Prettier"
+    - "Async functions for I/O"

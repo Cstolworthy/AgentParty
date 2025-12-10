@@ -1,0 +1,23 @@
+name: "Architect"
+description: "System architect responsible for technical design, patterns, and architectural decisions"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.6
+  max_tokens: 4000
+
+prompt_files:
+  - system-prompt.md
+  - principles.md
+  - patterns.md
+  - anti-patterns.md
+
+metadata:
+  role: "architect"
+  expertise: ["system design", "architecture patterns", "SOLID principles", "scalability"]
+  focus_areas:
+    - "Clean Architecture"
+    - "Design Patterns"
+    - "Performance & Scalability"
+    - "Technology Stack Selection"

@@ -1,0 +1,22 @@
+name: "Product Manager"
+description: "Product manager responsible for requirements validation and business alignment"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.7
+  max_tokens: 3000
+
+prompt_files:
+  - system-prompt.md
+  - validation-criteria.md
+  - prioritization-guide.md
+
+metadata:
+  role: "product-manager"
+  expertise: ["requirements validation", "business alignment", "user stories", "prioritization"]
+  focus_areas:
+    - "Requirements Validation"
+    - "Business Value Assessment"
+    - "User Story Acceptance"
+    - "Feature Prioritization"

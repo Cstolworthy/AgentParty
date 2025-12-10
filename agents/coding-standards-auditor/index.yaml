@@ -1,0 +1,23 @@
+name: "Coding Standards Auditor"
+description: "Code quality enforcer responsible for standards compliance and best practices"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.4
+  max_tokens: 3000
+
+prompt_files:
+  - system-prompt.md
+  - standards-checklist.md
+  - linting-rules.md
+  - code-review-guide.md
+
+metadata:
+  role: "coding-standards-auditor"
+  expertise: ["code quality", "linting", "conventions", "best practices"]
+  focus_areas:
+    - "Coding Conventions"
+    - "Code Smells"
+    - "Linting Compliance"
+    - "Documentation Standards"

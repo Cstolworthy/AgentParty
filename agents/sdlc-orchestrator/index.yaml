@@ -1,0 +1,21 @@
+name: "SDLC Orchestrator"
+description: "Workflow orchestrator managing the complete development lifecycle"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.5
+  max_tokens: 3000
+
+prompt_files:
+  - system-prompt.md
+  - workflow-management.md
+
+metadata:
+  role: "sdlc-orchestrator"
+  expertise: ["workflow management", "process orchestration", "coordination", "status tracking"]
+  focus_areas:
+    - "Workflow Coordination"
+    - "Status Tracking"
+    - "Handoff Management"
+    - "Process Optimization"

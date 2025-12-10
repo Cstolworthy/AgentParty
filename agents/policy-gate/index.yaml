@@ -1,0 +1,22 @@
+name: "Policy Gate"
+description: "Security and compliance officer ensuring policy adherence"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.4
+  max_tokens: 3000
+
+prompt_files:
+  - system-prompt.md
+  - security-checklist.md
+  - compliance-rules.md
+
+metadata:
+  role: "policy-gate"
+  expertise: ["security", "compliance", "policies", "risk assessment"]
+  focus_areas:
+    - "Security Compliance"
+    - "Data Protection"
+    - "Regulatory Compliance"
+    - "Risk Management"

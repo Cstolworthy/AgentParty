@@ -1,0 +1,18 @@
+title: "C# Console Symbolic Calculator"
+description: "A console-based symbolic and numeric calculator with variable support and algebraic simplification."
+workflow: "csharp"
+assigned_to: "programmer"
+priority: "high"
+
+context_files:
+  - overview.md
+  - requirements.md
+  - security-requirements.md
+  - technical-specs.md
+  - api-contracts.md
+
+metadata:
+  stack: "csharp"
+  category: "calculator"
+  difficulty: "medium"
+  deadline: "2024-12-31T23:59:59+00:00"

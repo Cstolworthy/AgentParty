@@ -1,0 +1,106 @@
+services:
+  # Redis for session storage
+  redis:
+    image: redis:7-alpine
+    container_name: agentparty-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - agentparty-network
+
+  # Qdrant vector database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: agentparty-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    networks:
+      - agentparty-network
+
+  # AgentParty MCP Server (Development)
+  agentparty-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: agentparty-dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./agents:/app/agents
+      - ./workflows:/app/workflows
+      - ./jobs:/app/jobs
+      - ./tests:/app/tests
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./data:/app/data
+    environment:
+      - ENVIRONMENT=development
+      - REDIS_URL=redis://redis:6379
+      - QDRANT_URL=http://qdrant:6333
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - DATABASE_PATH=/app/data/agentparty.db
+      - LOG_LEVEL=DEBUG
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    networks:
+      - agentparty-network
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    profiles:
+      - dev
+
+  # AgentParty MCP Server (Production)
+  agentparty:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: agentparty-prod
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - REDIS_URL=redis://redis:6379
+      - QDRANT_URL=http://qdrant:6333
+      - LOG_LEVEL=INFO
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    networks:
+      - agentparty-network
+    restart: unless-stopped
+    profiles:
+      - prod
+
+volumes:
+  redis_data:
+    driver: local
+  qdrant_data:
+    driver: local
+
+networks:
+  agentparty-network:
+    driver: bridge

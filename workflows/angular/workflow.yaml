@@ -1,0 +1,133 @@
+name: "Angular Development Workflow"
+version: "1.0"
+description: "Complete Angular development workflow with component testing and UX validation"
+
+steps:
+  - id: "requirements"
+    name: "Requirements & UX Analysis"
+    description: "Gather requirements and define user experience"
+    agent: "requirements-engineer"
+    inputs: []
+    outputs: ["requirements_doc", "ux_requirements"]
+    transitions:
+      - to: "specification"
+
+  - id: "specification"
+    name: "Component Specification"
+    description: "Design components, services, and state management"
+    agent: "spec-author"
+    inputs: ["requirements_doc"]
+    outputs: ["component_spec", "api_contracts", "state_design"]
+    approvals:
+      - agent: "product-manager"
+        condition: "requirements_met"
+    transitions:
+      - to: "architecture"
+
+  - id: "architecture"
+    name: "Architecture Design"
+    description: "Design Angular architecture with modules, lazy loading, and reactive patterns"
+    agent: "architect"
+    inputs: ["component_spec", "state_design"]
+    outputs: ["architecture_doc", "module_structure"]
+    approvals:
+      - agent: "engineering-manager"
+        condition: "architecture_approved"
+    transitions:
+      - to: "implementation"
+
+  - id: "implementation"
+    name: "Component & Service Implementation"
+    description: "Build components with Jasmine/Karma testing"
+    agent: "programmer"
+    inputs: ["component_spec", "architecture_doc"]
+    outputs: ["source_code", "component_tests", "service_tests"]
+    transitions:
+      - to: "standards-audit"
+
+  - id: "standards-audit"
+    name: "Angular Standards Audit"
+    description: "Verify Angular style guide and best practices"
+    agent: "coding-standards-auditor"
+    inputs: ["source_code"]
+    outputs: ["lint_report", "style_guide_check"]
+    approvals:
+      - agent: "coding-standards-auditor"
+        condition: "standards_pass"
+    transitions:
+      - to: "qa-testing"
+        condition: "pass"
+      - to: "implementation"
+        condition: "fail"
+
+  - id: "qa-testing"
+    name: "QA & E2E Testing"
+    description: "Execute unit, integration, and E2E tests"
+    agent: "qa-engineer"
+    inputs: ["source_code", "component_tests", "component_spec"]
+    outputs: ["test_results", "e2e_results", "accessibility_report"]
+    approvals:
+      - agent: "qa-engineer"
+        condition: "tests_pass"
+    transitions:
+      - to: "policy-gate"
+        condition: "pass"
+      - to: "implementation"
+        condition: "fail"
+
+  - id: "policy-gate"
+    name: "Security & Performance Gate"
+    description: "Verify security, performance, and accessibility"
+    agent: "policy-gate"
+    inputs: ["source_code", "build_output", "accessibility_report"]
+    outputs: ["security_report", "performance_audit", "a11y_compliance"]
+    approvals:
+      - agent: "policy-gate"
+        condition: "policies_met"
+    transitions:
+      - to: "final-review"
+        condition: "pass"
+      - to: "implementation"
+        condition: "fail"
+
+  - id: "final-review"
+    name: "Engineering Manager Review"
+    description: "Final review including build size and performance"
+    agent: "engineering-manager"
+    inputs: ["source_code", "test_results", "security_report", "performance_audit"]
+    outputs: ["approval"]
+    approvals:
+      - agent: "engineering-manager"
+        condition: "approved"
+    transitions:
+      - to: "complete"
+
+  - id: "complete"
+    name: "Complete"
+    description: "Ready for deployment"
+    agent: "sdlc-orchestrator"
+    inputs: ["approval"]
+    outputs: ["deployment_ready"]
+
+metadata:
+  stack: "angular"
+  framework: "Angular 17+"
+  language: "TypeScript"
+  testing: ["Jasmine", "Karma", "Cypress", "Playwright"]
+  principles:
+    - "Component-based architecture"
+    - "Reactive programming (RxJS)"
+    - "Dependency injection"
+    - "Lazy loading"
+    - "OnPush change detection"
+  conventions:
+    - "Angular style guide"
+    - "Standalone components (Angular 17+)"
+    - "Signals for state management"
+    - "Smart/Dumb component pattern"
+    - "Module organization by feature"
+  accessibility:
+    - "WCAG 2.1 Level AA compliance"
+    - "Semantic HTML"
+    - "ARIA attributes"
+    - "Keyboard navigation"

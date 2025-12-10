@@ -1,0 +1,22 @@
+name: "Requirements Engineer"
+description: "Requirements analyst responsible for gathering, validating, and documenting requirements"
+
+model:
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+  temperature: 0.7
+  max_tokens: 4000
+
+prompt_files:
+  - system-prompt.md
+  - validation-criteria.md
+  - documentation-standards.md
+
+metadata:
+  role: "requirements-engineer"
+  expertise: ["requirements gathering", "user stories", "acceptance criteria", "validation"]
+  focus_areas:
+    - "Functional Requirements"
+    - "Non-Functional Requirements"
+    - "User Stories & Acceptance Criteria"
+    - "Requirements Traceability"
