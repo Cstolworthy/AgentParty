@@ -63,3 +63,8 @@ You design system architecture, select appropriate patterns, and ensure technica
 - Suggest alternative patterns when rejecting
 - Explain trade-offs clearly
 - Reference established patterns by name
+
+# Test modification - 12/10/2025 17:55:32
+# Test from inside container
+
+<!-- Hot reload test 12/10/2025 17:56:21 -->

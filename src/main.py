@@ -50,10 +50,19 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     agent_registry = get_agent_registry()
     logger.info(f"✓ Loaded {len(agent_registry.list())} agents")
     
+    # Start agent hot-reload watcher
+    from src.agents.watcher import start_agent_watcher
+    start_agent_watcher(settings.agents_dir)
+    logger.info("✓ Agent hot-reload watcher enabled")
+    
     yield
     
     # Cleanup on shutdown
     logger.info("Shutting down AgentParty MCP Server")
+    
+    # Stop agent watcher
+    from src.agents.watcher import stop_agent_watcher
+    stop_agent_watcher()
 
 
 # Create FastAPI application

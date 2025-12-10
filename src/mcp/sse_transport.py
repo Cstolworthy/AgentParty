@@ -108,7 +108,8 @@ class MCPSSETransport:
             return {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {
-                    "tools": {}
+                    "tools": {},
+                    "resources": {}
                 },
                 "serverInfo": {
                     "name": "agentparty",
@@ -333,8 +334,170 @@ class MCPSSETransport:
                 ]
             }
         
+        # List resources
+        elif method == "resources/list":
+            from src.agents.registry import get_agent_registry
+            from src.workflows.loader import list_available_workflows
+            from src.jobs.manager import get_job_manager
+            
+            resources = []
+            
+            # System documentation
+            resources.append({
+                "uri": "agentparty://documentation",
+                "name": "AgentParty System Documentation",
+                "description": "Comprehensive technical documentation of the AgentParty MCP server",
+                "mimeType": "text/markdown"
+            })
+            
+            # Agent resources
+            agent_registry = get_agent_registry()
+            for agent_id in agent_registry.list():
+                resources.append({
+                    "uri": f"agent://{agent_id}",
+                    "name": f"Agent: {agent_id}",
+                    "description": f"Configuration and prompts for the {agent_id} agent",
+                    "mimeType": "application/json"
+                })
+            
+            # Workflow resources
+            for workflow_id in list_available_workflows():
+                resources.append({
+                    "uri": f"workflow://{workflow_id}",
+                    "name": f"Workflow: {workflow_id}",
+                    "description": f"Complete workflow definition for {workflow_id} SDLC",
+                    "mimeType": "application/yaml"
+                })
+            
+            # Job resources
+            job_manager = get_job_manager()
+            for job in job_manager.list_available():
+                resources.append({
+                    "uri": f"job://{job.id}",
+                    "name": f"Job: {job.title}",
+                    "description": job.description,
+                    "mimeType": "application/yaml"
+                })
+            
+            return {"resources": resources}
+        
+        # Read resource
+        elif method == "resources/read":
+            uri = params.get("uri")
+            if not uri:
+                raise ValueError("uri required")
+            
+            # Read resource content directly
+            content = await self._read_resource_content(uri)
+            
+            return {
+                "contents": [
+                    {
+                        "uri": uri,
+                        "mimeType": "text/plain",
+                        "text": content
+                    }
+                ]
+            }
+        
         else:
             raise ValueError(f"Unknown method: {method}")
+    
+    async def _read_resource_content(self, uri: str) -> str:
+        """Read resource content by URI."""
+        import json
+        import yaml
+        from pathlib import Path
+        from src.agents.registry import get_agent_registry
+        from src.workflows.loader import load_workflow_definition
+        from src.jobs.manager import get_job_manager
+        
+        if uri == "agentparty://documentation":
+            # Return comprehensive documentation
+            from src.mcp.documentation import get_full_documentation
+            return get_full_documentation()
+        
+        elif uri.startswith("agent://"):
+            agent_id = uri.replace("agent://", "")
+            agent_registry = get_agent_registry()
+            agent = agent_registry.get(agent_id)
+            
+            agent_data = {
+                "id": agent_id,
+                "name": agent.name,
+                "description": agent.description,
+                "model": {
+                    "provider": agent.llm_config.provider,
+                    "model": agent.llm_config.model,
+                    "temperature": agent.llm_config.temperature,
+                    "max_tokens": agent.llm_config.max_tokens,
+                },
+                "prompt_files": agent.prompt_files,
+                "prompts": {},
+            }
+            
+            agent_dir = Path(f"agents/{agent_id}")
+            for prompt_file in agent.prompt_files:
+                prompt_path = agent_dir / prompt_file
+                if prompt_path.exists():
+                    agent_data["prompts"][prompt_file] = prompt_path.read_text()
+            
+            return json.dumps(agent_data, indent=2)
+        
+        elif uri.startswith("workflow://"):
+            workflow_id = uri.replace("workflow://", "")
+            workflow_def = load_workflow_definition(workflow_id)
+            
+            workflow_data = {
+                "id": workflow_def.id,
+                "name": workflow_def.name,
+                "description": workflow_def.description,
+                "version": workflow_def.version,
+                "steps": [
+                    {
+                        "id": step.id,
+                        "name": step.name,
+                        "description": step.description,
+                        "agent": step.agent,
+                        "inputs": step.inputs,
+                        "outputs": step.outputs,
+                        "requires_approval": step.requires_approval,
+                        "approval_agent": step.approval_agent,
+                        "next_step": step.next_step,
+                    }
+                    for step in workflow_def.steps
+                ],
+                "metadata": workflow_def.metadata,
+            }
+            return yaml.dump(workflow_data, default_flow_style=False)
+        
+        elif uri.startswith("job://"):
+            job_id = uri.replace("job://", "")
+            from src.jobs.loader import load_job_definition
+            job_def = load_job_definition(job_id)
+            
+            job_data = {
+                "id": job_id,
+                "title": job_def.title,
+                "description": job_def.description,
+                "workflow_id": job_def.workflow_id,
+                "assigned_to": job_def.assigned_to,
+                "priority": job_def.priority,
+                "context_files": job_def.context_files,
+                "deadline": job_def.deadline.isoformat() if job_def.deadline else None,
+            }
+            
+            job_dir = Path(f"jobs/{job_id}")
+            job_data["context"] = {}
+            for context_file in job_def.context_files:
+                file_path = job_dir / context_file
+                if file_path.exists():
+                    job_data["context"][context_file] = file_path.read_text()
+            
+            return yaml.dump(job_data, default_flow_style=False)
+        
+        else:
+            return json.dumps({"error": f"Unknown resource URI: {uri}"})
 
 
 # Global transport instance
